@@ -6,29 +6,6 @@ import re
 import shutil
 
 
-# def get_icon_locations(input: str):
-#     parser = tinycss.make_parser("page3")
-#     stylesheet = parser.parse_stylesheet(input)
-
-#     for rule in stylesheet.rules:
-#         for selector in rule.selector:
-#             if selector.value == "before":
-#                 icon_name = rule.selector[1].value
-#                 icon_location = rule.declarations[0].value[0].value
-
-#                 print(icon_name)
-#                 print(icon_location)
-#                 print(type(icon_location))
-#                 print(len(icon_location))
-
-# Converts the given string to camel case. This isn't a complete implementation,
-# and is only applicable for converting icon names.
-# https://www.geeksforgeeks.org/python-convert-snake-case-string-to-camel-case/
-
-
-# Converts the given string to camel case. This isn't a complete implementation,
-# and is only applicable for converting icon names.
-# https://www.geeksforgeeks.org/python-convert-snake-case-string-to-camel-case/
 def process_icon_name(icon: str, name_adjustments: dict) -> str:
     name = icon.replace("-", "_")
 
@@ -44,10 +21,7 @@ def process_icon_name(icon: str, name_adjustments: dict) -> str:
     return name
 
 
-# Generates a Flutter class from the given dict of names and code points.
-# Largely taken from
-# https://github.com/ScerIO/icon_font_generator/blob/master/lib/generate_flutter_class.dart
-def generate_flutter_class(name_code_point_dict: dict[str, str], class_name: str, font_family: str) -> str:
+def generate_flutter_class(icons: list[tuple[str, str, str]], class_name: str) -> str:
     out = f"""library flutter_tabler_icons;
 
 import 'package:flutter/widgets.dart';
@@ -57,7 +31,6 @@ class {class_name} {{
 
 """
     # Some icons need their names changed to work with Dart variable naming.
-    # https://github.com/fluttercommunity/font_awesome_flutter/blob/5e8020d8bfce95568498e58b8d458c781ec50de1/util/lib/main.dart#L17
     name_adjustments = {
         "500px": "fiveHundredPx",
         "360-degrees": "threeHundredSixtyDegrees",
@@ -78,18 +51,21 @@ class {class_name} {{
 
     processed_icons = {}
 
-    for icon in name_code_point_dict:
-        name = process_icon_name(icon, name_adjustments)
-        processed_icons[name] = name_code_point_dict[icon]
+    for original_name, code_point, font_family in icons:
+        name = process_icon_name(original_name, name_adjustments)
+        processed_icons[name] = (code_point, font_family)
 
-        code_point = name_code_point_dict[icon]
+    # Sort alphabetically
+    sorted_names = sorted(processed_icons.keys())
 
+    for name in sorted_names:
+        code_point, font_family = processed_icons[name]
         out += f'    static const IconData {name} = IconData(0x{code_point}, fontFamily: "{font_family}", fontPackage: "flutter_tabler_icons");\n'
 
     out += "\n  static const all = <String, IconData> {\n"
 
-    for icon in processed_icons:
-        out += f'    "{icon}": {icon},\n'
+    for name in sorted_names:
+        out += f'    "{name}": {name},\n'
 
     out += "  };\n}\n"
 
@@ -146,18 +122,20 @@ if __name__ == "__main__":
     filled_css_path = os.path.join(args.input, "tabler-icons-filled.css")
     filled_icons = parse_css(filled_css_path)
 
-    # Generate outline class
-    outline_class = generate_flutter_class(outline_icons, "TablerIcons", "tabler-icons")
+    # Merge into a single list: (original_name, code_point, font_family)
+    all_icons = []
+
+    for name, code_point in outline_icons.items():
+        all_icons.append((name, code_point, "tabler-icons"))
+
+    for name, code_point in filled_icons.items():
+        all_icons.append((name + "_filled", code_point, "tabler-icons-filled"))
+
+    # Generate single combined class
+    combined_class = generate_flutter_class(all_icons, "TablerIcons")
 
     with open(args.output, "w") as output_file:
-        output_file.write(outline_class)
-
-    # Generate filled class
-    filled_output = args.output.replace(".dart", "_filled.dart")
-    filled_class = generate_flutter_class(filled_icons, "TablerIconsFilled", "tabler-icons-filled")
-
-    with open(filled_output, "w") as output_file:
-        output_file.write(filled_class)
+        output_file.write(combined_class)
 
     # Copy TTF files
     ttf_dir = os.path.dirname(args.ttf_out)
