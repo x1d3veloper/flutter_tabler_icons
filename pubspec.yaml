@@ -1,0 +1,26 @@
+name: flutter_tabler_icons
+description: Tabler Icons for flutter using icons from https://github.com/tabler/tabler-icons by Paweł Kuna @codecalm
+repository: https://github.com/bigbadbob2003/flutter_tabler_icons
+homepage: https://github.com/bigbadbob2003/flutter_tabler_icons
+
+version: 1.44.0
+
+environment:
+  sdk: ">=2.12.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+flutter:
+  fonts:
+    - family: tabler-icons
+      fonts:
+        - asset: assets/fonts/tabler-icons.ttf
+          style: normal
+          weight: 400
+    - family: tabler-icons-filled
+      fonts:
+        - asset: assets/fonts/tabler-icons-filled.ttf
+          style: normal
+          weight: 400
