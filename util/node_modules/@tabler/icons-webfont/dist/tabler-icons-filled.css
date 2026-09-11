@@ -1,12 +1,12 @@
 /*!
- * Tabler Icons 3.44.0 by tabler - https://tabler.io
- * License - https://github.com/tabler/tabler-icons/blob/master/LICENSE
+ * Tabler Icons 3.46.0 by tabler - https://tabler.io
+ * License - https://github.com/tabler/tabler-icons/blob/main/LICENSE
  */
 @font-face {
   font-family: "tabler-icons-filled";
   font-style: normal;
   font-weight: 400;
-  src: url("./fonts/tabler-icons-filled.woff2?v3.44.0") format("woff2"), url("./fonts/tabler-icons-filled.woff?") format("woff"), url("./fonts/tabler-icons-filled.ttf?v3.44.0") format("truetype");
+  src: url("./fonts/tabler-icons-filled.woff2?v3.46.0") format("woff2"), url("./fonts/tabler-icons-filled.woff?") format("woff"), url("./fonts/tabler-icons-filled.ttf?v3.46.0") format("truetype");
 }
 .ti {
   font-family: "tabler-icons-filled" !important;
@@ -735,6 +735,10 @@
 
 .ti-brand-pinterest:before {
   content: "\1008f";
+}
+
+.ti-brand-signal:before {
+  content: "\1027b";
 }
 
 .ti-brand-sketch:before {
@@ -2889,7 +2893,7 @@
   content: "\ff0a";
 }
 
-.ti-mood-confuzed:before {
+.ti-mood-confused:before {
   content: "\f7f2";
 }
 
